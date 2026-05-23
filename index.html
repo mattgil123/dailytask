@@ -361,17 +361,24 @@
     <script>
         const STORAGE_KEY = 'routine_tracker_history';
 
+        // Bulletproof date builder engineered for perfect performance on mobile browsers
         function getFormattedDate() {
             try {
-                return new Date().toLocaleDateString('en-US', {
-                    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
-                });
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                const now = new Date();
+                const dayName = days[now.getDay()];
+                const monthName = months[now.getMonth()];
+                const dateNum = now.getDate();
+                const yearNum = now.getFullYear();
+                
+                return `${dayName}, ${monthName} ${dateNum}, ${yearNum}`;
             } catch (e) {
-                return "";
+                return "Today";
             }
         }
 
-        // Safe loader wrapped completely to prevent blank screen errors
         document.addEventListener('DOMContentLoaded', () => {
             try {
                 const dateEl = document.getElementById('live-header-date');
@@ -381,4 +388,48 @@
                 checkboxes.forEach(checkbox => {
                     try {
                         const savedState = localStorage.getItem('live_' + checkbox.id);
-                        if (savedState === 'true') checkbox.checked = true
+                        if (savedState === 'true') checkbox.checked = true;
+                    } catch(e) {}
+                    
+                    checkbox.addEventListener('change', (e) => {
+                        try {
+                            localStorage.setItem('live_' + e.target.id, e.target.checked);
+                        } catch(err) {}
+                    });
+                });
+
+                const notesField = document.getElementById('daily-notes');
+                if (notesField) {
+                    try {
+                        const savedNotes = localStorage.getItem('live_notes');
+                        if (savedNotes) notesField.value = savedNotes;
+                    } catch(e) {}
+                    
+                    notesField.addEventListener('input', (e) => {
+                        try {
+                            localStorage.setItem('live_notes', e.target.value);
+                        } catch(err) {}
+                    });
+                }
+            } catch (globalError) {
+                console.error("Initialization warning safely bypassed:", globalError);
+            }
+
+            renderHistoryList();
+        });
+
+        function resetRoutine() {
+            if (confirm('Clear currently configured fields for today?')) {
+                forceCleanLiveState();
+            }
+        }
+
+        function forceCleanLiveState() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                try { localStorage.removeItem('live_' + cb.id); } catch(e) {}
+            });
+            const notesField = document.getElementById('daily-notes');
+            if (notesField) notesField.value = '';
+            try { localStorage.removeItem('
