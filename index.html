@@ -133,4 +133,357 @@
             appearance: none;
             -webkit-appearance: none;
             margin-right: 0.85rem;
-            width:
+            width: 1.15rem;
+            height: 1.15rem;
+            border: 1.5px solid var(--checkbox-border);
+            border-radius: 5px;
+            background-color: transparent;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .routine-item input[type="checkbox"]::before {
+            content: "";
+            width: 0.55rem;
+            height: 0.55rem;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transform: scale(0);
+            transform-origin: center;
+            transition: transform 0.1s ease-in-out;
+            background-color: #ffffff;
+        }
+
+        .routine-item input[type="checkbox"]:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        .routine-item input[type="checkbox"]:checked::before {
+            transform: scale(1);
+        }
+
+        .routine-item label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .routine-item input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: var(--checked-color);
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+            display: inline-block;
+        }
+
+        .notes-area {
+            width: 100%;
+            min-height: 80px;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            padding: 0.4rem 0;
+            box-sizing: border-box;
+        }
+
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1.25rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background-color: #111215;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            border-color: #4b5263;
+            background-color: var(--card-bg);
+        }
+
+        .history-date { font-size: 0.85rem; font-weight: 500; }
+        .history-score { font-size: 0.75rem; color: var(--text-muted); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(5, 5, 6, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.25rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .past-note-box {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            color: #e2e8f0;
+            margin-top: 0.4rem;
+        }
+
+        .past-item-completed {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-group">
+            <h1>Daily Routine</h1>
+            <div id="live-header-date" class="header-date">Loading date...</div>
+        </div>
+        <button class="btn-refresh" onclick="resetRoutine()">Clear Form</button>
+    </header>
+
+    <main>
+        <div class="routine-card">
+            <ul class="routine-list">
+                <li class="routine-item"><input type="checkbox" id="item1"><label for="item1">Make Bed</label></li>
+                <li class="routine-item"><input type="checkbox" id="item2"><label for="item2">ACV Lemon Water</label></li>
+                <li class="routine-item"><input type="checkbox" id="item3"><label for="item3">Water with Electrolytes</label></li>
+                <li class="routine-item"><input type="checkbox" id="item4"><label for="item4">Keto Lunch</label></li>
+                <li class="routine-item"><input type="checkbox" id="item5"><label for="item5">Shower</label></li>
+                <li class="routine-item"><input type="checkbox" id="item6"><label for="item6">Water with Creatine</label></li>
+                <li class="routine-item"><input type="checkbox" id="item7"><label for="item7">Write in Journal</label></li>
+                <li class="routine-item"><input type="checkbox" id="item_1percent"><label for="item_1percent">1% Tasks</label></li>
+                <li class="routine-item"><input type="checkbox" id="item8"><label for="item8">AI Learning</label></li>
+                <li class="routine-item"><input type="checkbox" id="item10"><label for="item10">Keto Dinner & Vitamins</label></li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item9">
+                    <label for="item9">5 PM Fast <span class="note">(Begin fasting window)</span></label>
+                </li>
+            </ul>
+        </div>
+
+        <h2>Night Routine</h2>
+        <div class="routine-card">
+            <ul class="routine-list">
+                <li class="routine-item"><input type="checkbox" id="item11"><label for="item11">Peppermint Tea with Collagen & Sleep Stack</label></li>
+                <li class="routine-item"><input type="checkbox" id="item13"><label for="item13">Visualize</label></li>
+                <li class="routine-item"><input type="checkbox" id="item14"><label for="item14">Bible & Prayer</label></li>
+                <li class="routine-item"><input type="checkbox" id="item15"><label for="item15">Tape Mouth</label></li>
+            </ul>
+        </div>
+
+        <h2>Daily Notes</h2>
+        <div class="routine-card">
+            <textarea id="daily-notes" class="notes-area" placeholder="Log metrics, quick thoughts, or targets achieved..."></textarea>
+        </div>
+
+        <button class="btn-save" onclick="saveDayEnd()">Save & Close Day</button>
+
+        <section class="history-section">
+            <h2>Past Log History</h2>
+            <div id="history-list" class="history-list"></div>
+        </section>
+    </main>
+
+    <div id="history-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-date" style="margin:0; font-size:1.1rem;">Date Archive</h3>
+                <button class="btn-refresh" onclick="closeModal()">Back</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        Minimal Routine Tracker &bull; Resets Manually
+    </footer>
+
+    <script>
+        const STORAGE_KEY = 'routine_tracker_history';
+
+        function getFormattedDate() {
+            return new Date().toLocaleDateString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('live-header-date').innerText = getFormattedDate();
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const savedState = localStorage.getItem('live_' + checkbox.id);
+                if (savedState === 'true') checkbox.checked = true;
+                
+                checkbox.addEventListener('change', (e) => {
+                    localStorage.setItem('live_' + e.target.id, e.target.checked);
+                });
+            });
+
+            const notesField = document.getElementById('daily-notes');
+            const savedNotes = localStorage.getItem('live_notes');
+            if (savedNotes) notesField.value = savedNotes;
+            
+            notesField.addEventListener('input', (e) => {
+                localStorage.setItem('live_notes', e.target.value);
+            });
+
+            renderHistoryList();
+        });
+
+        function resetRoutine() {
+            if (confirm('Clear currently configured fields for today?')) {
+                forceCleanLiveState();
+            }
+        }
+
+        function forceCleanLiveState() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                localStorage.removeItem('live_' + cb.id);
+            });
+            document.getElementById('daily-notes').value = '';
+            localStorage.removeItem('live_notes');
+        }
+
+        function saveDayEnd() {
+            const dateStr = getFormattedDate();
+            if(!confirm(`Archive tracking logs for ${dateStr} and clear current checklist?`)) return;
+
+            const itemsArr = [];
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    const txt = cb.nextElementSibling.innerText.split('(')[0].trim();
+                    itemsArr.push(txt);
+                }
+            });
+
+            const dayRecord = {
+                id: Date.now(),
+                date: dateStr,
+                completedItems: itemsArr,
+                totalCheckedCount: itemsArr.length,
+                totalPossibleCount: checkboxes.length,
+                notes: document.getElementById('daily-notes').value.trim()
+            };
+
+            const fullHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            fullHistory.unshift(dayRecord);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fullHistory));
+
+            forceCleanLiveState();
+            renderHistoryList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHistoryList() {
+            const container = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if(history.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:0.5rem;">No history saved yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = history.map(day => `
+                <div class="history-item" onclick="viewPastDay(${day.id})">
+                    <span class="history-date">${day.date}</span>
+                    <span class="history-score">${day.totalCheckedCount}/${day.totalPossibleCount} Done</span>
+                </div>
+            `).join('');
+        }
+
+        function viewPastDay(id) {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const match = history.find(d => d.id === id);
+            if(!match) return;
+
+            document.getElementById('modal-date').innerText = match.date;
+            
+            let htmlContent = `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Completed Checklist</div>`;
+            
+            if(match.completedItems.length === 0) {
+                htmlContent += `<div style="font-size:0.85rem; color:var(--checked-color); margin-bottom:1rem;">No items completed.</div>`;
+            } else {
+                htmlContent += `<div style="margin-bottom:1rem;">`;
+                match.completedItems.forEach(item => {
+                    htmlContent += `<div class="past-item-completed">✓ ${item}</div>`;
+                });
+                htmlContent += `</div>`;
+            }
+
+            htmlContent += `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Saved Notes</div>`;
+            htmlContent += `<div class="past-note-box">${match.notes || '<span style="color:var(--checked-color); font-style:italic;">No written notes recorded.</span>'}</div>`;
+
+            document.getElementById('modal-body').innerHTML = htmlContent;
+            document.getElementById('history-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('history-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
