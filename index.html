@@ -6,11 +6,14 @@
     <title>Daily Routine</title>
     <style>
         :root {
-            --bg-color: #fcfcfc;
-            --text-color: #2d3748;
-            --accent-color: #2b6cb0;
-            --border-color: #e2e8f0;
-            --checked-color: #a0aec0;
+            --bg-color: #0b0c0e;
+            --card-bg: #16171a;
+            --text-color: #f3f4f6;
+            --text-muted: #8e939e;
+            --accent-color: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.15);
+            --border-color: #26282c;
+            --checked-color: #4b5263;
         }
 
         body {
@@ -18,42 +21,62 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            padding: 2rem 1rem;
-            max-width: 500px;
+            padding: 3rem 1.5rem;
+            max-width: 480px;
             margin: 0 auto;
+            -webkit-font-smoothing: antialiased;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
         }
 
-        h1, h2 {
-            margin: 0;
+        h1 {
+            font-size: 1.5rem;
             font-weight: 600;
-            letter-spacing: -0.05em;
+            letter-spacing: -0.03em;
+            margin: 0;
+            color: #ffffff;
         }
 
-        h1 { font-size: 1.8rem; color: var(--accent-color); }
-        h2 { font-size: 1.2rem; margin-top: 2rem; margin-bottom: 1rem; color: #4a5568; }
+        h2 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-muted);
+        }
 
         .btn-refresh {
-            background: none;
+            background-color: transparent;
             border: 1px solid var(--border-color);
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
+            color: var(--text-color);
+            padding: 0.5rem 0.9rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 500;
             transition: all 0.2s ease;
         }
 
         .btn-refresh:hover {
-            background-color: #edf2f7;
-            border-color: #cbd5e0;
+            background-color: var(--card-bg);
+            border-color: #4b5263;
+        }
+
+        .routine-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .routine-list {
@@ -65,22 +88,60 @@
         .routine-item {
             display: flex;
             align-items: flex-start;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f7fafc;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
+        .routine-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Checkbox Design matching modern AI platforms */
         .routine-item input[type="checkbox"] {
-            margin-right: 1rem;
-            margin-top: 0.25rem;
-            width: 1.1rem;
-            height: 1.1rem;
+            appearance: none;
+            -webkit-appearance: none;
+            margin-right: 1.1rem;
+            margin-top: 0.2rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 1px solid #3f444e;
+            border-radius: 6px;
+            background-color: transparent;
+            display: inline-grid;
+            place-content: center;
             cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .routine-item input[type="checkbox"]::before {
+            content: "";
+            width: 0.6rem;
+            height: 0.6rem;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transform: scale(0);
+            transform-origin: center;
+            transition: transform 0.1s ease-in-out;
+            background-color: #ffffff;
+        }
+
+        .routine-item input[type="checkbox"]:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .routine-item input[type="checkbox"]:checked::before {
+            transform: scale(1);
         }
 
         .routine-item label {
             cursor: pointer;
-            font-size: 1.05rem;
-            transition: color 0.2s ease;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            user-select: none;
         }
 
         .routine-item input[type="checkbox"]:checked + label {
@@ -89,17 +150,18 @@
         }
 
         .note {
-            font-size: 0.85rem;
-            color: #718096;
-            margin-top: 0.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
             display: block;
         }
 
         footer {
-            margin-top: 3rem;
+            margin-top: 4rem;
             text-align: center;
             font-size: 0.75rem;
-            color: #a0aec0;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
         }
     </style>
 </head>
@@ -111,108 +173,72 @@
     </header>
 
     <main>
-        <ul class="routine-list">
-            <li class="routine-item">
-                <input type="checkbox" id="item1">
-                <label for="item1">Make Bed</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item2">
-                <label for="item2">ACV Lemon Water</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item3">
-                <label for="item3">Water with Electrolytes</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item4">
-                <label for="item4">Keto Lunch</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item5">
-                <label for="item5">Shower</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item6">
-                <label for="item6">Water with Creatine</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item7">
-                <label for="item7">Journal & 1% Tasks</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item8">
-                <label for="item8">AI Learning</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item9">
-                <label for="item9">
-                    5 PM Fast
-                    <span class="note">Begin fasting window</span>
-                </label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item10">
-                <label for="item10">Keto Dinner & Vitamins</label>
-            </li>
-        </ul>
+        <div class="routine-card">
+            <ul class="routine-list">
+                <li class="routine-item">
+                    <input type="checkbox" id="item1">
+                    <label for="item1">Make Bed</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item2">
+                    <label for="item2">ACV Lemon Water</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item3">
+                    <label for="item3">Water with Electrolytes</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item4">
+                    <label for="item4">Keto Lunch</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item5">
+                    <label for="item5">Shower</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item6">
+                    <label for="item6">Water with Creatine</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item7">
+                    <label for="item7">Write in Journal</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item_1percent">
+                    <label for="item_1percent">1% Tasks</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item8">
+                    <label for="item8">AI Learning</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item10">
+                    <label for="item10">Keto Dinner & Vitamins</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item9">
+                    <label for="item9">
+                        5 PM Fast
+                        <span class="note">Begin fasting window</span>
+                    </label>
+                </li>
+            </ul>
+        </div>
 
-        <h2>Night Routine (Breadcrumb Method)</h2>
-        <ul class="routine-list">
-            <li class="routine-item">
-                <input type="checkbox" id="item11">
-                <label for="item11">Peppermint Tea with Collagen & Sleep Stack</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item12">
-                <label for="item12">ACV Water with Sleep Stack</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item13">
-                <label for="item13">Visualize</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item14">
-                <label for="item14">Bible & Prayer</label>
-            </li>
-            <li class="routine-item">
-                <input type="checkbox" id="item15">
-                <label for="item15">Tape Mouth</label>
-            </li>
-        </ul>
-    </main>
-
-    <footer>
-        Minimal Routine Tracker • Resets Manually
-    </footer>
-
-    <script>
-        // Load saved state from LocalStorage on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                const savedState = localStorage.getItem(checkbox.id);
-                if (savedState === 'true') {
-                    checkbox.checked = true;
-                }
-                
-                // Add event listener to save changes instantly
-                checkbox.addEventListener('change', (e) => {
-                    localStorage.setItem(e.target.id, e.target.checked);
-                });
-            });
-        });
-
-        // Manual reset function for the morning refresh
-        function resetRoutine() {
-            if (confirm('Reset all items for a new day?')) {
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                    localStorage.removeItem(checkbox.id);
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+        <h2>Night Routine</h2>
+        <div class="routine-card">
+            <ul class="routine-list">
+                <li class="routine-item">
+                    <input type="checkbox" id="item11">
+                    <label for="item11">Peppermint Tea with Collagen & Sleep Stack</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item13">
+                    <label for="item13">Visualize</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item14">
+                    <label for="item14">Bible & Prayer</label>
+                </li>
+                <li class="routine-item">
+                    <input type="checkbox" id="item15">
