@@ -14,6 +14,7 @@
             --accent-glow: rgba(59, 130, 246, 0.15);
             --border-color: #26282c;
             --checked-color: #4b5263;
+            --success-color: #10b981;
         }
 
         body {
@@ -71,6 +72,24 @@
             border-color: #4b5263;
         }
 
+        .btn-save {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #2563eb;
+        }
+
         .routine-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -96,7 +115,6 @@
             border-bottom: none;
         }
 
-        /* Custom Checkbox Design matching modern AI platforms */
         .routine-item input[type="checkbox"] {
             appearance: none;
             -webkit-appearance: none;
@@ -156,6 +174,109 @@
             display: block;
         }
 
+        /* Notes Section UI */
+        .notes-area {
+            width: 100%;
+            min-height: 120px;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            padding: 0.5rem 0;
+        }
+
+        /* History Log UI */
+        .history-section {
+            margin-top: 3.5rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 2rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .history-item {
+            background-color: #111215;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            border-color: #4b5263;
+            background-color: var(--card-bg);
+        }
+
+        .history-date {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .history-score {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal Overlay for viewing past entries */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(5, 5, 6, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .past-note-box {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            color: #e2e8f0;
+            margin-top: 0.5rem;
+        }
+
+        .past-item-completed {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+        }
+
         footer {
             margin-top: 4rem;
             text-align: center;
@@ -168,59 +289,26 @@
 <body>
 
     <header>
-        <h1>Daily Routine</h1>
-        <button class="btn-refresh" onclick="resetRoutine()">Reset Day</button>
+        <h1 id="current-view-title">Daily Routine</h1>
+        <button class="btn-refresh" onclick="resetRoutine()">Clear Form</button>
     </header>
 
     <main>
         <div class="routine-card">
             <ul class="routine-list">
-                <li class="routine-item">
-                    <input type="checkbox" id="item1">
-                    <label for="item1">Make Bed</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item2">
-                    <label for="item2">ACV Lemon Water</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item3">
-                    <label for="item3">Water with Electrolytes</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item4">
-                    <label for="item4">Keto Lunch</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item5">
-                    <label for="item5">Shower</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item6">
-                    <label for="item6">Water with Creatine</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item7">
-                    <label for="item7">Write in Journal</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item_1percent">
-                    <label for="item_1percent">1% Tasks</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item8">
-                    <label for="item8">AI Learning</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item10">
-                    <label for="item10">Keto Dinner & Vitamins</label>
-                </li>
+                <li class="routine-item"><input type="checkbox" id="item1"><label for="item1">Make Bed</label></li>
+                <li class="routine-item"><input type="checkbox" id="item2"><label for="item2">ACV Lemon Water</label></li>
+                <li class="routine-item"><input type="checkbox" id="item3"><label for="item3">Water with Electrolytes</label></li>
+                <li class="routine-item"><input type="checkbox" id="item4"><label for="item4">Keto Lunch</label></li>
+                <li class="routine-item"><input type="checkbox" id="item5"><label for="item5">Shower</label></li>
+                <li class="routine-item"><input type="checkbox" id="item6"><label for="item6">Water with Creatine</label></li>
+                <li class="routine-item"><input type="checkbox" id="item7"><label for="item7">Write in Journal</label></li>
+                <li class="routine-item"><input type="checkbox" id="item_1percent"><label for="item_1percent">1% Tasks</label></li>
+                <li class="routine-item"><input type="checkbox" id="item8"><label for="item8">AI Learning</label></li>
+                <li class="routine-item"><input type="checkbox" id="item10"><label for="item10">Keto Dinner & Vitamins</label></li>
                 <li class="routine-item">
                     <input type="checkbox" id="item9">
-                    <label for="item9">
-                        5 PM Fast
-                        <span class="note">Begin fasting window</span>
-                    </label>
+                    <label for="item9">5 PM Fast <span class="note">Begin fasting window</span></label>
                 </li>
             </ul>
         </div>
@@ -228,56 +316,170 @@
         <h2>Night Routine</h2>
         <div class="routine-card">
             <ul class="routine-list">
-                <li class="routine-item">
-                    <input type="checkbox" id="item11">
-                    <label for="item11">Peppermint Tea with Collagen & Sleep Stack</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item13">
-                    <label for="item13">Visualize</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item14">
-                    <label for="item14">Bible & Prayer</label>
-                </li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item15">
-                    <label for="item15">Tape Mouth</label>
-                </li>
+                <li class="routine-item"><input type="checkbox" id="item11"><label for="item11">Peppermint Tea with Collagen & Sleep Stack</label></li>
+                <li class="routine-item"><input type="checkbox" id="item13"><label for="item13">Visualize</label></li>
+                <li class="routine-item"><input type="checkbox" id="item14"><label for="item14">Bible & Prayer</label></li>
+                <li class="routine-item"><input type="checkbox" id="item15"><label for="item15">Tape Mouth</label></li>
             </ul>
         </div>
+
+        <h2>Daily Notes</h2>
+        <div class="routine-card">
+            <textarea id="daily-notes" class="notes-area" placeholder="Log metrics, quick thoughts, or targets achieved..."></textarea>
+        </div>
+
+        <button class="btn-save" onclick="saveDayEnd()">Save & Close Day</button>
+
+        <section class="history-section">
+            <h2>Past Log History</h2>
+            <div id="history-list" class="history-list">
+                </div>
+        </section>
     </main>
+
+    <div id="history-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-date" style="margin:0; font-size:1.2rem;">Date Archive</h3>
+                <button class="btn-refresh" onclick="closeModal()">Back</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
 
     <footer>
         Minimal Routine Tracker &bull; Resets Manually
     </footer>
 
     <script>
-        // Load saved state from LocalStorage on page load
+        const STORAGE_KEY = 'routine_tracker_history';
+
+        // Load workflow state immediately upon launching app
         document.addEventListener('DOMContentLoaded', () => {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            // Reload checkbox data state values
             checkboxes.forEach(checkbox => {
-                const savedState = localStorage.getItem(checkbox.id);
-                if (savedState === 'true') {
-                    checkbox.checked = true;
-                }
+                const savedState = localStorage.getItem('live_' + checkbox.id);
+                if (savedState === 'true') checkbox.checked = true;
                 
-                // Add event listener to save changes instantly
                 checkbox.addEventListener('change', (e) => {
-                    localStorage.setItem(e.target.id, e.target.checked);
+                    localStorage.setItem('live_' + e.target.id, e.target.checked);
                 });
             });
+
+            // Reload active text note updates parameters
+            const notesField = document.getElementById('daily-notes');
+            const savedNotes = localStorage.getItem('live_notes');
+            if (savedNotes) notesField.value = savedNotes;
+            
+            notesField.addEventListener('input', (e) => {
+                localStorage.setItem('live_notes', e.target.value);
+            });
+
+            renderHistoryList();
         });
 
-        // Manual reset function for the morning refresh
+        // Trigger safe wipe manually
         function resetRoutine() {
-            if (confirm('Reset all items for a new day?')) {
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                    localStorage.removeItem(checkbox.id);
-                });
+            if (confirm('Clear currently configured fields for today?')) {
+                forceCleanLiveState();
             }
+        }
+
+        function forceCleanLiveState() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                localStorage.removeItem('live_' + cb.id);
+            });
+            document.getElementById('daily-notes').value = '';
+            localStorage.removeItem('live_notes');
+        }
+
+        // Snapshot packaging utility 
+        function saveDayEnd() {
+            const dateStr = new Date().toLocaleDateString('en-US', {
+                weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+            });
+
+            if(!confirm(`Archive tracking logs for ${dateStr} and clear current checklist?`)) return;
+
+            const itemsArr = [];
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    const txt = cb.nextElementSibling.innerText.split('\n')[0];
+                    itemsArr.push(txt);
+                }
+            });
+
+            const dayRecord = {
+                id: Date.now(),
+                date: dateStr,
+                completedItems: itemsArr,
+                totalCheckedCount: itemsArr.length,
+                totalPossibleCount: checkboxes.length,
+                notes: document.getElementById('daily-notes').value.trim()
+            };
+
+            const fullHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            fullHistory.unshift(dayRecord); // Add to the top of list
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fullHistory));
+
+            forceCleanLiveState();
+            renderHistoryList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render past logs feed
+        function renderHistoryList() {
+            const container = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if(history.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; text-align:center; padding:1rem;">No history saved yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = history.map(day => `
+                <div class="history-item" onclick="viewPastDay(${day.id})">
+                    <span class="history-date">${day.date}</span>
+                    <span class="history-score">${day.totalCheckedCount}/${day.totalPossibleCount} Done</span>
+                </div>
+            `).join('');
+        }
+
+        // Historical item viewer parsing
+        function viewPastDay(id) {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const match = history.find(d => d.id === id);
+            if(!match) return;
+
+            document.getElementById('modal-date').innerText = match.date;
+            
+            let htmlContent = `<div style="font-weight:600; font-size:0.85rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem;">Completed Checklist</div>`;
+            
+            if(match.completedItems.length === 0) {
+                htmlContent += `<div style="font-size:0.9rem; color:var(--checked-color); margin-bottom:1.5rem;">No items completed.</div>`;
+            } else {
+                htmlContent += `<div style="margin-bottom:1.5rem;">`;
+                match.completedItems.forEach(item => {
+                    htmlContent += `<div class="past-item-completed">✓ ${item}</div>`;
+                });
+                htmlContent += `</div>`;
+            }
+
+            htmlContent += `<div style="font-weight:600; font-size:0.85rem; text-transform:uppercase; color:var(--text-muted);">Saved Notes</div>`;
+            htmlContent += `<div class="past-note-box">${match.notes || '<span style="color:var(--checked-color); font-style:italic;">No written notes recorded.</span>'}</div>`;
+
+            // Injection setup 
+            document.getElementById('modal-body').innerHTML = htmlContent;
+            document.getElementById('history-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('history-modal').style.display = 'none';
         }
     </script>
 </body>
