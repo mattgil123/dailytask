@@ -14,7 +14,7 @@
             --accent-glow: rgba(59, 130, 246, 0.15);
             --border-color: #26282c;
             --checked-color: #4b5263;
-            --checkbox-border: #6b7280; /* Lighter, visible grey border */
+            --checkbox-border: #6b7280;
         }
 
         body {
@@ -37,12 +37,24 @@
             padding-bottom: 0.5rem;
         }
 
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
         h1 {
             font-size: 1.35rem;
             font-weight: 600;
             letter-spacing: -0.03em;
             margin: 0;
             color: #ffffff;
+        }
+
+        .header-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         h2 {
@@ -188,4 +200,41 @@
             font-size: 0.95rem;
             resize: vertical;
             outline: none;
-            padding: 0
+            padding: 0.4rem 0;
+            box-sizing: border-box;
+        }
+
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1.25rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background-color: #111215;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            border-color: #4b5263;
+            background-color: var(--card-bg);
+        }
+
+        .history-date { font-size: 0.85rem; font-weight: 500; }
+        .history-score { font-size: 0.75rem; color: var(--text-muted); }
+
+        .modal {
+            display: none;
+            position: fixed
