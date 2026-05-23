@@ -296,7 +296,7 @@
     <header>
         <div class="title-group">
             <h1>Daily Routine</h1>
-            <div id="live-header-date" class="header-date">Loading date...</div>
+            <div id="live-header-date" class="header-date">...</div>
         </div>
         <button class="btn-refresh" onclick="resetRoutine()">Clear Form</button>
     </header>
@@ -361,28 +361,25 @@
     <script>
         const STORAGE_KEY = 'routine_tracker_history';
 
-        // Bulletproof date builder engineered for perfect performance on mobile browsers
         function getFormattedDate() {
             try {
                 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 
                 const now = new Date();
-                const dayName = days[now.getDay()];
-                const monthName = months[now.getMonth()];
-                const dateNum = now.getDate();
-                const yearNum = now.getFullYear();
-                
-                return `${dayName}, ${monthName} ${dateNum}, ${yearNum}`;
+                return days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
             } catch (e) {
                 return "Today";
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Execution engine triggered sequentially across all devices
+        function initTrackerApp() {
             try {
                 const dateEl = document.getElementById('live-header-date');
-                if (dateEl) dateEl.innerText = getFormattedDate();
+                if (dateEl) {
+                    dateEl.innerText = getFormattedDate();
+                }
 
                 const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
@@ -411,12 +408,18 @@
                         } catch(err) {}
                     });
                 }
-            } catch (globalError) {
-                console.error("Initialization warning safely bypassed:", globalError);
-            }
+            } catch (err) {}
 
             renderHistoryList();
-        });
+        }
+
+        // Double fallback event structure to force load execution on Chrome Android
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTrackerApp);
+        } else {
+            initTrackerApp();
+        }
+        window.addEventListener('load', initTrackerApp);
 
         function resetRoutine() {
             if (confirm('Clear currently configured fields for today?')) {
@@ -432,4 +435,110 @@
             });
             const notesField = document.getElementById('daily-notes');
             if (notesField) notesField.value = '';
-            try { localStorage.removeItem('
+            try { localStorage.removeItem('live_notes'); } catch(e) {}
+        }
+
+        function saveDayEnd() {
+            const dateStr = getFormattedDate();
+            if(!confirm(`Archive tracking logs for ${dateStr} and clear current checklist?`)) return;
+
+            const itemsArr = [];
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    const txt = cb.nextElementSibling.innerText.split('(')[0].trim();
+                    itemsArr.push(txt);
+                }
+            });
+
+            const dayRecord = {
+                id: Date.now(),
+                date: dateStr,
+                completedItems: itemsArr,
+                totalCheckedCount: itemsArr.length,
+                totalPossibleCount: checkboxes.length,
+                notes: document.getElementById('daily-notes') ? document.getElementById('daily-notes').value.trim() : ""
+            };
+
+            let fullHistory = [];
+            try {
+                fullHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                if (!Array.isArray(fullHistory)) fullHistory = [];
+            } catch(e) {
+                fullHistory = [];
+            }
+
+            fullHistory.unshift(dayRecord);
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(fullHistory));
+            } catch(e) {
+                alert("Storage full or restricted. Unable to save history item.");
+            }
+
+            forceCleanLiveState();
+            renderHistoryList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHistoryList() {
+            const container = document.getElementById('history-list');
+            if (!container) return;
+
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                if (!Array.isArray(history)) history = [];
+            } catch(e) {
+                history = [];
+            }
+            
+            if(history.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:0.5rem;">No history saved yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = history.map(day => `
+                <div class="history-item" onclick="viewPastDay(${day.id})">
+                    <span class="history-date">${day.date || 'Unknown Date'}</span>
+                    <span class="history-score">${day.totalCheckedCount || 0}/${day.totalPossibleCount || 15} Done</span>
+                </div>
+            `).join('');
+        }
+
+        function viewPastDay(id) {
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch(e) {
+                return;
+            }
+            const match = history.find(d => d.id === id);
+            if(!match) return;
+
+            document.getElementById('modal-date').innerText = match.date || "Archive Log";
+            
+            let htmlContent = `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Completed Checklist</div>`;
+            
+            if(!match.completedItems || match.completedItems.length === 0) {
+                htmlContent += `<div style="font-size:0.85rem; color:var(--checked-color); margin-bottom:1rem;">No items completed.</div>`;
+            } else {
+                htmlContent += `<div style="margin-bottom:1rem;">`;
+                match.completedItems.forEach(item => {
+                    htmlContent += `<div class="past-item-completed">✓ ${item}</div>`;
+                });
+                htmlContent += `</div>`;
+            }
+
+            htmlContent += `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Saved Notes</div>`;
+            htmlContent += `<div class="past-note-box">${match.notes || '<span style="color:var(--checked-color); font-style:italic;">No written notes recorded.</span>'}</div>`;
+
+            document.getElementById('modal-body').innerHTML = htmlContent;
+            document.getElementById('history-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('history-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
