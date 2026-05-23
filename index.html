@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine</title>
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --text-color: #2d3748;
+            --accent-color: #2b6cb0;
+            --border-color: #e2e8f0;
+            --checked-color: #a0aec0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h1, h2 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.05em;
+        }
+
+        h1 { font-size: 1.8rem; color: var(--accent-color); }
+        h2 { font-size: 1.2rem; margin-top: 2rem; margin-bottom: 1rem; color: #4a5568; }
+
+        .btn-refresh {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-refresh:hover {
+            background-color: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .routine-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .routine-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f7fafc;
+        }
+
+        .routine-item input[type="checkbox"] {
+            margin-right: 1rem;
+            margin-top: 0.25rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+
+        .routine-item label {
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: color 0.2s ease;
+        }
+
+        .routine-item input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: var(--checked-color);
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Daily Routine</h1>
+        <button class="btn-refresh" onclick="resetRoutine()">Reset Day</button>
+    </header>
+
+    <main>
+        <ul class="routine-list">
+            <li class="routine-item">
+                <input type="checkbox" id="item1">
+                <label for="item1">Make Bed</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item2">
+                <label for="item2">ACV Lemon Water</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item3">
+                <label for="item3">Water with Electrolytes</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item4">
+                <label for="item4">Keto Lunch</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item5">
+                <label for="item5">Shower</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item6">
+                <label for="item6">Water with Creatine</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item7">
+                <label for="item7">Journal & 1% Tasks</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item8">
+                <label for="item8">AI Learning</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item9">
+                <label for="item9">
+                    5 PM Fast
+                    <span class="note">Begin fasting window</span>
+                </label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item10">
+                <label for="item10">Keto Dinner & Vitamins</label>
+            </li>
+        </ul>
+
+        <h2>Night Routine (Breadcrumb Method)</h2>
+        <ul class="routine-list">
+            <li class="routine-item">
+                <input type="checkbox" id="item11">
+                <label for="item11">Peppermint Tea with Collagen & Sleep Stack</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item12">
+                <label for="item12">ACV Water with Sleep Stack</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item13">
+                <label for="item13">Visualize</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item14">
+                <label for="item14">Bible & Prayer</label>
+            </li>
+            <li class="routine-item">
+                <input type="checkbox" id="item15">
+                <label for="item15">Tape Mouth</label>
+            </li>
+        </ul>
+    </main>
+
+    <footer>
+        Minimal Routine Tracker • Resets Manually
+    </footer>
+
+    <script>
+        // Load saved state from LocalStorage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                const savedState = localStorage.getItem(checkbox.id);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+                
+                // Add event listener to save changes instantly
+                checkbox.addEventListener('change', (e) => {
+                    localStorage.setItem(e.target.id, e.target.checked);
+                });
+            });
+        });
+
+        // Manual reset function for the morning refresh
+        function resetRoutine() {
+            if (confirm('Reset all items for a new day?')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    localStorage.removeItem(checkbox.id);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
