@@ -310,6 +310,7 @@
                 <li class="routine-item"><input type="checkbox" id="item3"><label for="item3">Water with Electrolytes</label></li>
                 <li class="routine-item"><input type="checkbox" id="item4"><label for="item4">Keto Lunch</label></li>
                 <li class="routine-item"><input type="checkbox" id="item5"><label for="item5">Shower</label></li>
+                <li class="routine-item"><input type="checkbox" id="item_spanish"><label for="item_spanish">Spanish Lessons</label></li>
                 <li class="routine-item"><input type="checkbox" id="item6"><label for="item6">Water with Creatine</label></li>
                 <li class="routine-item"><input type="checkbox" id="item7"><label for="item7">Write in Journal</label></li>
                 <li class="routine-item"><input type="checkbox" id="item8"><label for="item8">1% Tasks</label></li>
@@ -503,7 +504,7 @@
                     return;
                 }
 
-                const totalCheckboxes = document.querySelectorAll('input[type="checkbox"]').length || 15;
+                const totalCheckboxes = document.querySelectorAll('input[type="checkbox"]').length || 16;
 
                 container.innerHTML = history.map(day => `
                     <div class="history-item" onclick="viewPastDay(${day.id})">
