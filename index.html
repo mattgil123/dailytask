@@ -1,556 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Routine</title>
-    <style>
-        :root {
-            --bg-color: #0b0c0e;
-            --card-bg: #16171a;
-            --text-color: #f3f4f6;
-            --text-muted: #8e939e;
-            --accent-color: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.15);
-            --border-color: #26282c;
-            --checked-color: #4b5263;
-            --checkbox-border: #6b7280;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0c10">
+<title>// DAILY ROUTINE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.4;
-            padding: 1.5rem 1rem;
-            max-width: 460px;
-            margin: 0 auto;
-            -webkit-font-smoothing: antialiased;
-        }
+  :root {
+    --bg:           #0a0c10;
+    --bg-surface:   #0f1117;
+    --bg-card:      #131619;
+    --bg-hover:     #181c20;
+    --green:        #3ddc84;
+    --green-dim:    #1a5c38;
+    --green-subtle: #0c1f15;
+    --amber:        #c8a84b;
+    --amber-dim:    #6b570f;
+    --text:         #c8cdd6;
+    --text-muted:   #5a6070;
+    --text-dim:     #333840;
+    --border:       #1e2228;
+    --border-mid:   #2a2f38;
+    --mono:         'JetBrains Mono', 'Courier New', monospace;
+  }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
 
-        .title-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.15rem;
-        }
+  .shell { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; }
 
-        h1 {
-            font-size: 1.35rem;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-            margin: 0;
-            color: #ffffff;
-        }
+  header { padding: 36px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .header-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .site-title { font-size: 14px; font-weight: 600; color: var(--green); letter-spacing: 0.04em; }
+  .header-meta { font-size: 11px; color: var(--text-muted); }
+  .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  .header-sub span { color: var(--text-dim); }
 
-        .header-date {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+  .progress-row { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+  .progress-bar { flex: 1; height: 2px; background: var(--border-mid); }
+  .progress-fill { height: 100%; background: var(--green); transition: width 0.3s ease; }
+  .progress-stat { font-size: 11px; color: var(--green); min-width: 48px; text-align: right; }
 
-        h2 {
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-top: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
-        }
+  .section-line {
+    display: flex; align-items: center; gap: 10px;
+    margin: 24px 0 6px; color: var(--text-dim);
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .section-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        .btn-refresh {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
+  .task-list { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+  .task-item {
+    display: flex; align-items: center; gap: 14px; padding: 9px 12px;
+    cursor: pointer; border: 1px solid transparent; border-radius: 2px;
+    transition: background 0.1s, border-color 0.1s;
+  }
+  .task-item:hover { background: var(--bg-hover); border-color: var(--border); }
+  .task-item.done  { background: var(--green-subtle); border-color: var(--green-dim); }
 
-        .btn-refresh:hover {
-            background-color: var(--card-bg);
-            border-color: #4b5263;
-        }
+  .task-item input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 14px; height: 14px; border: 1px solid var(--text-dim);
+    border-radius: 1px; background: transparent; cursor: pointer;
+    flex-shrink: 0; position: relative; transition: border-color 0.1s, background 0.1s;
+  }
+  .task-item input[type="checkbox"]:checked { background: var(--green); border-color: var(--green); }
+  .task-item input[type="checkbox"]:checked::after {
+    content: ''; position: absolute; left: 3px; top: 1px; width: 5px; height: 8px;
+    border: 1.5px solid var(--bg); border-top: none; border-left: none; transform: rotate(45deg);
+  }
+  .task-num { font-size: 10px; color: var(--text-dim); min-width: 22px; flex-shrink: 0; }
+  .task-item.done .task-num { color: var(--green-dim); }
+  .task-label { flex: 1; font-size: 13px; font-weight: 300; color: var(--text); user-select: none; transition: color 0.1s; }
+  .task-item.done .task-label { color: var(--green-dim); text-decoration: line-through; text-decoration-color: var(--green-dim); }
 
-        .btn-save {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border: none;
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: background-color 0.2s ease;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-        }
+  .notes-wrap { margin-top: 4px; }
+  textarea#notes {
+    width: 100%; min-height: 90px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 2px; color: var(--text); font-family: var(--mono); font-size: 12px;
+    font-weight: 300; padding: 10px 12px; resize: vertical; outline: none; line-height: 1.7; transition: border-color 0.1s;
+  }
+  textarea#notes::placeholder { color: var(--text-dim); }
+  textarea#notes:focus { border-color: var(--border-mid); }
 
-        .btn-save:hover {
-            background-color: #2563eb;
-        }
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.05em;
+    padding: 7px 16px; border: 1px solid var(--border-mid); border-radius: 2px;
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+  }
+  .btn:hover { border-color: var(--green-dim); color: var(--green); }
+  .btn-ghost:hover { border-color: var(--border-mid); color: var(--amber); background: transparent; }
 
-        .routine-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 0.2rem 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            margin-bottom: 0.5rem;
-        }
+  .log-wrap { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px; }
+  .log-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .log-title { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+  .log-entries { display: flex; flex-direction: column; gap: 1px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .log-entries.open { max-height: 800px; }
+  .log-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; cursor: pointer; border: 1px solid transparent;
+    border-radius: 2px; transition: background 0.1s;
+  }
+  .log-row:hover { background: var(--bg-hover); border-color: var(--border); }
+  .log-row-date { font-size: 12px; color: var(--text-muted); }
+  .log-row-score { font-size: 11px; color: var(--green); }
+  .log-detail { display: none; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 14px 16px; margin: 4px 0 8px; }
+  .log-detail.active { display: block; }
+  .log-detail-header { font-size: 10px; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .log-task-grid { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+  .log-task-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .dot.on  { background: var(--green); }
+  .dot.off { background: var(--border-mid); }
+  .log-task-name { color: var(--text-muted); }
+  .log-notes-txt { border-top: 1px solid var(--border); padding-top: 8px; font-size: 11px; color: var(--text-muted); white-space: pre-wrap; line-height: 1.7; }
+  .empty-log { font-size: 11px; color: var(--text-dim); padding: 8px 12px; }
 
-        .routine-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+  footer {
+    margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--text-muted); }
 
-        .routine-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .routine-item:last-child {
-            border-bottom: none;
-        }
-
-        .routine-item input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            margin-right: 0.85rem;
-            width: 1.15rem;
-            height: 1.15rem;
-            border: 1.5px solid var(--checkbox-border);
-            border-radius: 5px;
-            background-color: transparent;
-            display: inline-grid;
-            place-content: center;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            flex-shrink: 0;
-        }
-
-        .routine-item input[type="checkbox"]::before {
-            content: "";
-            width: 0.55rem;
-            height: 0.55rem;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-            transform: scale(0);
-            transform-origin: center;
-            transition: transform 0.1s ease-in-out;
-            background-color: #ffffff;
-        }
-
-        .routine-item input[type="checkbox"]:checked {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 6px var(--accent-glow);
-        }
-
-        .routine-item input[type="checkbox"]:checked::before {
-            transform: scale(1);
-        }
-
-        .routine-item label {
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 400;
-            color: var(--text-color);
-            transition: all 0.2s ease;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .routine-item input[type="checkbox"]:checked + label {
-            text-decoration: line-through;
-            color: var(--checked-color);
-        }
-
-        .note {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-left: 0.5rem;
-            display: inline-block;
-        }
-
-        .notes-area {
-            width: 100%;
-            min-height: 80px;
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-family: inherit;
-            font-size: 0.95rem;
-            resize: vertical;
-            outline: none;
-            padding: 0.4rem 0;
-            box-sizing: border-box;
-        }
-
-        .history-section {
-            margin-top: 2rem;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 1.25rem;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .history-item {
-            background-color: #111215;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.5rem 0.75rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .history-item:hover {
-            border-color: #4b5263;
-            background-color: var(--card-bg);
-        }
-
-        .history-date { font-size: 0.85rem; font-weight: 500; }
-        .history-score { font-size: 0.75rem; color: var(--text-muted); }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(5, 5, 6, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 1.25rem;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .past-note-box {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            color: #e2e8f0;
-            margin-top: 0.4rem;
-        }
-
-        .past-item-completed {
-            color: var(--text-muted);
-            text-decoration: line-through;
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-        }
-
-        footer {
-            margin-top: 2.5rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-    </style>
+  #toast {
+    position: fixed; bottom: 20px; right: 20px; background: var(--bg-card);
+    border: 1px solid var(--green-dim); color: var(--green); font-family: var(--mono);
+    font-size: 11px; padding: 9px 16px; border-radius: 2px; opacity: 0;
+    transform: translateY(6px); transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none; z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+</style>
 </head>
 <body>
+<div class="shell">
 
-    <header>
-        <div class="title-group">
-            <h1>Daily Routine</h1>
-            <div id="live-header-date" class="header-date">...</div>
-        </div>
-        <button class="btn-refresh" onclick="resetRoutine()">Clear Form</button>
-    </header>
-
-    <main>
-        <!-- Morning / Day Routine -->
-        <div class="routine-card">
-            <ul class="routine-list">
-                <li class="routine-item"><input type="checkbox" id="item1"><label for="item1">Make Bed</label></li>
-                <li class="routine-item"><input type="checkbox" id="item2"><label for="item2">ACV Lemon Water</label></li>
-                <li class="routine-item"><input type="checkbox" id="item3"><label for="item3">Water with Electrolytes</label></li>
-                <li class="routine-item"><input type="checkbox" id="item4"><label for="item4">Keto Lunch</label></li>
-                <li class="routine-item"><input type="checkbox" id="item5"><label for="item5">Shower</label></li>
-                <li class="routine-item"><input type="checkbox" id="item_spanish"><label for="item_spanish">Spanish Lessons</label></li>
-                <li class="routine-item"><input type="checkbox" id="item6"><label for="item6">Water with Creatine</label></li>
-                <li class="routine-item"><input type="checkbox" id="item7"><label for="item7">Write in Journal</label></li>
-                <li class="routine-item"><input type="checkbox" id="item8"><label for="item8">1% Tasks</label></li>
-                <li class="routine-item"><input type="checkbox" id="item9"><label for="item9">AI Learning</label></li>
-                <li class="routine-item"><input type="checkbox" id="item10"><label for="item10">Keto Dinner & Vitamins</label></li>
-                <li class="routine-item">
-                    <input type="checkbox" id="item11">
-                    <label for="item11">5 PM Fast <span class="note">(Begin fasting window)</span></label>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Night Routine -->
-        <h2>Night Routine</h2>
-        <div class="routine-card">
-            <ul class="routine-list">
-                <li class="routine-item"><input type="checkbox" id="item12"><label for="item12">Peppermint Tea with Collagen & Sleep Stack</label></li>
-                <li class="routine-item"><input type="checkbox" id="item13"><label for="item13">Visualize</label></li>
-                <li class="routine-item"><input type="checkbox" id="item14"><label for="item14">Bible & Prayer</label></li>
-                <li class="routine-item"><input type="checkbox" id="item15"><label for="item15">No Smartphones after 9pm</label></li>
-            </ul>
-        </div>
-
-        <!-- Notes Entry Area Box -->
-        <h2>Daily Notes</h2>
-        <div class="routine-card">
-            <textarea id="daily-notes" class="notes-area" placeholder="Log metrics, quick thoughts, or targets achieved..."></textarea>
-        </div>
-
-        <!-- Archive Execution Button -->
-        <button class="btn-save" onclick="saveDayEnd()">Save & Close Day</button>
-
-        <!-- Dynamic Logs History Container -->
-        <section class="history-section">
-            <h2>Past Log History</h2>
-            <div id="history-list" class="history-list"></div>
-        </section>
-    </main>
-
-    <!-- Modal Layout popover frame -->
-    <div id="history-modal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="modal-date" style="margin:0; font-size:1.1rem;">Date Archive</h3>
-                <button class="btn-refresh" onclick="closeModal()">Back</button>
-            </div>
-            <div id="modal-body"></div>
-        </div>
+  <header>
+    <div class="header-top">
+      <span class="site-title">// DAILY ROUTINE</span>
+      <span class="header-meta" id="header-date"></span>
     </div>
+    <div class="header-sub">task tracker &middot; resets manually &middot; <span id="header-count">0/16 complete</span></div>
+  </header>
 
-    <footer>
-        Minimal Routine Tracker &bull; Resets Manually
-    </footer>
+  <div class="progress-row">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <span class="progress-stat" id="progress-stat">0%</span>
+  </div>
 
-    <script>
-        const STORAGE_KEY = 'routine_tracker_history';
+  <div class="section-line">morning &amp; day</div>
+  <ul class="task-list">
+    <li class="task-item" data-key="Make Bed"><input type="checkbox"><span class="task-num">[01]</span><span class="task-label">Make Bed</span></li>
+    <li class="task-item" data-key="ACV Lemon Water"><input type="checkbox"><span class="task-num">[02]</span><span class="task-label">ACV Lemon Water</span></li>
+    <li class="task-item" data-key="Water with Electrolytes"><input type="checkbox"><span class="task-num">[03]</span><span class="task-label">Water with Electrolytes</span></li>
+    <li class="task-item" data-key="Keto Lunch"><input type="checkbox"><span class="task-num">[04]</span><span class="task-label">Keto Lunch</span></li>
+    <li class="task-item" data-key="Shower"><input type="checkbox"><span class="task-num">[05]</span><span class="task-label">Shower</span></li>
+    <li class="task-item" data-key="Spanish Lessons"><input type="checkbox"><span class="task-num">[06]</span><span class="task-label">Spanish Lessons</span></li>
+    <li class="task-item" data-key="Water with Creatine"><input type="checkbox"><span class="task-num">[07]</span><span class="task-label">Water with Creatine</span></li>
+    <li class="task-item" data-key="Write in Journal"><input type="checkbox"><span class="task-num">[08]</span><span class="task-label">Write in Journal</span></li>
+    <li class="task-item" data-key="1% Tasks"><input type="checkbox"><span class="task-num">[09]</span><span class="task-label">1% Tasks</span></li>
+    <li class="task-item" data-key="AI Learning"><input type="checkbox"><span class="task-num">[10]</span><span class="task-label">AI Learning</span></li>
+    <li class="task-item" data-key="Keto Dinner and Vitamins"><input type="checkbox"><span class="task-num">[11]</span><span class="task-label">Keto Dinner &amp; Vitamins</span></li>
+    <li class="task-item" data-key="5 PM Fast"><input type="checkbox"><span class="task-num">[12]</span><span class="task-label">5 PM Fast &middot; begin fasting window</span></li>
+  </ul>
 
-        function getFormattedDate() {
-            try {
-                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                const now = new Date();
-                return days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-            } catch (e) {
-                return "Today";
-            }
-        }
+  <div class="section-line" style="margin-top:28px">night routine</div>
+  <ul class="task-list">
+    <li class="task-item" data-key="Peppermint Tea"><input type="checkbox"><span class="task-num">[13]</span><span class="task-label">Peppermint Tea &middot; Collagen &amp; Sleep Stack</span></li>
+    <li class="task-item" data-key="Visualize"><input type="checkbox"><span class="task-num">[14]</span><span class="task-label">Visualize</span></li>
+    <li class="task-item" data-key="Bible and Prayer"><input type="checkbox"><span class="task-num">[15]</span><span class="task-label">Bible &amp; Prayer</span></li>
+    <li class="task-item" data-key="No Smartphones after 9pm"><input type="checkbox"><span class="task-num">[16]</span><span class="task-label">No Smartphones after 9pm</span></li>
+  </ul>
 
-        function initTrackerApp() {
-            try {
-                const dateEl = document.getElementById('live-header-date');
-                if (dateEl) {
-                    dateEl.innerText = getFormattedDate();
-                }
+  <div class="section-line" style="margin-top:28px">daily notes</div>
+  <div class="notes-wrap">
+    <textarea id="notes" placeholder="// notes for today_"></textarea>
+  </div>
+  <div class="btn-row">
+    <button class="btn" id="btn-save">save &amp; close day</button>
+    <button class="btn btn-ghost" id="btn-clear">clear form</button>
+  </div>
 
-                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => {
-                    try {
-                        const savedState = localStorage.getItem('live_' + checkbox.id);
-                        if (savedState === 'true') checkbox.checked = true;
-                    } catch(e) {}
-                    
-                    checkbox.addEventListener('change', (e) => {
-                        try {
-                            localStorage.setItem('live_' + e.target.id, e.target.checked);
-                        } catch(err) {}
-                    });
-                });
+  <div class="log-wrap">
+    <div class="log-header-row">
+      <span class="log-title">// past log</span>
+      <button class="btn" id="btn-toggle">show archive</button>
+    </div>
+    <div class="log-entries" id="log-entries"></div>
+    <div class="log-detail" id="log-detail"></div>
+  </div>
 
-                const notesField = document.getElementById('daily-notes');
-                if (notesField) {
-                    try {
-                        const savedNotes = localStorage.getItem('live_notes');
-                        if (savedNotes) notesField.value = savedNotes;
-                    } catch(e) {}
-                    
-                    notesField.addEventListener('input', (e) => {
-                        try {
-                            localStorage.setItem('live_notes', e.target.value);
-                        } catch(err) {}
-                    });
-                }
-            } catch (err) {
-                console.error("Initialization warning bypassed safely:", err);
-            }
+  <footer>
+    <a href="https://mattgil123.github.io/home/">&larr; mattgil123.github.io</a>
+    <span>daily-routine &middot; v2</span>
+  </footer>
 
-            renderHistoryList();
-        }
+</div>
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initTrackerApp);
-        } else {
-            initTrackerApp();
-        }
-        window.addEventListener('load', initTrackerApp);
+<div id="toast"></div>
 
-        function resetRoutine() {
-            if (confirm('Clear currently configured fields for today?')) {
-                forceCleanLiveState();
-            }
-        }
+<script>
+(function() {
+  const K_TASKS = 'dr2_tasks';
+  const K_NOTES = 'dr2_notes';
+  const K_LOG   = 'dr2_log';
 
-        function forceCleanLiveState() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                cb.checked = false;
-                try { localStorage.removeItem('live_' + cb.id); } catch(e) {}
-            });
-            const notesField = document.getElementById('daily-notes');
-            if (notesField) notesField.value = '';
-            try { localStorage.removeItem('live_notes'); } catch(e) {}
-        }
+  const now = new Date();
+  const todayKey = now.toISOString().slice(0, 10);
+  const dateLabel = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  document.getElementById('header-date').textContent = dateLabel;
 
-        function saveDayEnd() {
-            const dateStr = getFormattedDate();
-            if(!confirm(`Archive tracking logs for ${dateStr} and clear current checklist?`)) return;
+  const getJSON = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch(e) { return {}; } };
+  const setJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const getNotes = () => localStorage.getItem(K_NOTES) || '';
+  const setNotes = v => localStorage.setItem(K_NOTES, v);
+  const getLog = () => getJSON(K_LOG);
+  const setLog = v => setJSON(K_LOG, v);
 
-            const itemsArr = [];
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                if(cb.checked) {
-                    const txt = cb.nextElementSibling.innerText.split('(')[0].trim();
-                    itemsArr.push(txt);
-                }
-            });
+  const items = Array.from(document.querySelectorAll('.task-item'));
+  const total = items.length;
 
-            const dayRecord = {
-                id: Date.now(),
-                date: dateStr,
-                completedItems: itemsArr,
-                totalCheckedCount: itemsArr.length,
-                totalPossibleCount: checkboxes.length,
-                notes: document.getElementById('daily-notes') ? document.getElementById('daily-notes').value.trim() : ""
-            };
+  function updateProgress() {
+    const done = items.filter(i => i.classList.contains('done')).length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-stat').textContent = pct + '%';
+    document.getElementById('header-count').textContent = done + '/' + total + ' complete';
+  }
 
-            let fullHistory = [];
-            try {
-                fullHistory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-                if (!Array.isArray(fullHistory)) fullHistory = [];
-            } catch(e) {
-                fullHistory = [];
-            }
+  const state = getJSON(K_TASKS);
+  items.forEach(item => {
+    const key = item.dataset.key;
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (state[key]) { cb.checked = true; item.classList.add('done'); }
+    item.addEventListener('click', function(e) {
+      if (e.target !== cb) cb.checked = !cb.checked;
+      const checked = cb.checked;
+      item.classList.toggle('done', checked);
+      const s = getJSON(K_TASKS);
+      if (checked) s[key] = true; else delete s[key];
+      setJSON(K_TASKS, s);
+      updateProgress();
+    });
+  });
+  updateProgress();
 
-            fullHistory.unshift(dayRecord);
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(fullHistory));
-            } catch(e) {
-                alert("Storage full or restricted. Unable to save history item.");
-            }
+  const notesEl = document.getElementById('notes');
+  notesEl.value = getNotes();
+  notesEl.addEventListener('input', () => setNotes(notesEl.value));
 
-            forceCleanLiveState();
-            renderHistoryList();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+  document.getElementById('btn-save').addEventListener('click', () => {
+    const snapshot = {};
+    items.forEach(i => { snapshot[i.dataset.key] = i.querySelector('input').checked; });
+    const done = Object.values(snapshot).filter(Boolean).length;
+    const log = getLog();
+    log[todayKey] = { tasks: snapshot, notes: notesEl.value, score: done + '/' + total };
+    setLog(log);
+    toast('day saved · ' + done + '/' + total + ' complete');
+    if (document.getElementById('log-entries').classList.contains('open')) renderLog();
+  });
 
-        function renderHistoryList() {
-            try {
-                const container = document.getElementById('history-list');
-                if (!container) return;
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    items.forEach(i => { i.querySelector('input').checked = false; i.classList.remove('done'); });
+    notesEl.value = '';
+    setJSON(K_TASKS, {});
+    setNotes('');
+    updateProgress();
+    toast('form cleared');
+  });
 
-                let history = [];
-                try {
-                    history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-                    if (!Array.isArray(history)) history = [];
-                } catch(e) {
-                    history = [];
-                }
-                
-                if(history.length === 0) {
-                    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:0.5rem;">No history saved yet.</div>`;
-                    return;
-                }
+  document.getElementById('btn-toggle').addEventListener('click', function() {
+    const el = document.getElementById('log-entries');
+    const open = el.classList.toggle('open');
+    this.textContent = open ? 'hide archive' : 'show archive';
+    if (open) renderLog();
+  });
 
-                const totalCheckboxes = document.querySelectorAll('input[type="checkbox"]').length || 16;
+  function renderLog() {
+    const log = getLog();
+    const container = document.getElementById('log-entries');
+    const detail = document.getElementById('log-detail');
+    detail.classList.remove('active');
+    detail.innerHTML = '';
+    const keys = Object.keys(log).sort().reverse();
+    if (!keys.length) {
+      container.innerHTML = '<div class="empty-log">// no entries yet_</div>';
+      return;
+    }
+    container.innerHTML = '';
+    keys.forEach(k => {
+      const entry = log[k];
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = '<span class="log-row-date">' + k + '</span><span class="log-row-score">' + entry.score + '</span>';
+      row.addEventListener('click', () => showDetail(k, entry));
+      container.appendChild(row);
+    });
+  }
 
-                container.innerHTML = history.map(day => `
-                    <div class="history-item" onclick="viewPastDay(${day.id})">
-                        <span class="history-date">${day.date || 'Unknown Date'}</span>
-                        <span class="history-score">${day.totalCheckedCount || 0}/${day.totalPossibleCount || totalCheckboxes} Done</span>
-                    </div>
-                `).join('');
-            } catch(e) {
-                console.error("History display loop error bypassed:", e);
-            }
-        }
+  function showDetail(dateKey, entry) {
+    const detail = document.getElementById('log-detail');
+    detail.classList.add('active');
+    const tasksHtml = Object.entries(entry.tasks).map(([name, done]) =>
+      '<div class="log-task-row"><div class="dot ' + (done ? 'on' : 'off') + '"></div><span class="log-task-name">' + esc(name) + '</span></div>'
+    ).join('');
+    const notesHtml = entry.notes ? '<div class="log-notes-txt">// ' + esc(entry.notes) + '</div>' : '';
+    detail.innerHTML = '<div class="log-detail-header">' + dateKey + ' · ' + entry.score + ' complete</div><div class="log-task-grid">' + tasksHtml + '</div>' + notesHtml;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 
-        function viewPastDay(id) {
-            let history = [];
-            try {
-                history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            } catch(e) {
-                return;
-            }
-            const match = history.find(d => d.id === id);
-            if(!match) return;
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-            document.getElementById('modal-date').innerText = match.date || "Archive Log";
-            
-            let htmlContent = `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem;">Completed Checklist</div>`;
-            
-            if(!match.completedItems || match.completedItems.length === 0) {
-                htmlContent += `<div style="font-size:0.85rem; color:var(--checked-color); margin-bottom:1rem;">No items completed.</div>`;
-            } else {
-                htmlContent += `<div style="margin-bottom:1rem;">`;
-                match.completedItems.forEach(item => {
-                    htmlContent += `<div class="past-item-completed">✓ ${item}</div>`;
-                });
-                htmlContent += `</div>`;
-            }
-
-            htmlContent += `<div style="font-weight:600; font-size:0.8rem; text-transform:uppercase; color:var(--text-muted);">Saved Notes</div>`;
-            htmlContent += `<div class="past-note-box">${match.notes || '<span style="color:var(--checked-color); font-style:italic;">No written notes recorded.</span>'}</div>`;
-
-            document.getElementById('modal-body').innerHTML = htmlContent;
-            document.getElementById('history-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('history-modal').style.display = 'none';
-        }
-    </script>
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+})();
+</script>
 </body>
 </html>
