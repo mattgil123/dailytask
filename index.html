@@ -86,4 +86,254 @@
   .notes-wrap { margin-top: 4px; }
   textarea#notes {
     width: 100%; min-height: 90px; background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 2px; color: var(--text); font-family:
+    border-radius: 2px; color: var(--text); font-family: var(--mono); font-size: 12px;
+    font-weight: 300; padding: 10px 12px; resize: vertical; outline: none; line-height: 1.7; transition: border-color 0.1s;
+  }
+  textarea#notes::placeholder { color: var(--text-dim); }
+  textarea#notes:focus { border-color: var(--border-mid); }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn {
+    font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.05em;
+    padding: 7px 16px; border: 1px solid var(--border-mid); border-radius: 2px;
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+  }
+  .btn:hover { border-color: var(--green-dim); color: var(--green); }
+  .btn-ghost:hover { border-color: var(--border-mid); color: var(--amber); background: transparent; }
+
+  .log-wrap { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px; }
+  .log-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .log-title { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+  .log-entries { display: flex; flex-direction: column; gap: 1px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .log-entries.open { max-height: 800px; }
+  .log-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; cursor: pointer; border: 1px solid transparent;
+    border-radius: 2px; transition: background 0.1s;
+  }
+  .log-row:hover { background: var(--bg-hover); border-color: var(--border); }
+  .log-row-date { font-size: 12px; color: var(--text-muted); }
+  .log-row-score { font-size: 11px; color: var(--green); }
+  .log-detail { display: none; background: var(--bg-card); border: 1px solid var(--border); border-radius: 2px; padding: 14px 16px; margin: 4px 0 8px; }
+  .log-detail.active { display: block; }
+  .log-detail-header { font-size: 10px; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .log-task-grid { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+  .log-task-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .dot.on  { background: var(--green); }
+  .dot.off { background: var(--border-mid); }
+  .log-task-name { color: var(--text-muted); }
+  .log-notes-txt { border-top: 1px solid var(--border); padding-top: 8px; font-size: 11px; color: var(--text-muted); white-space: pre-wrap; line-height: 1.7; }
+  .empty-log { font-size: 11px; color: var(--text-dim); padding: 8px 12px; }
+
+  footer {
+    margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em;
+  }
+  footer a { color: var(--text-dim); text-decoration: none; }
+  footer a:hover { color: var(--text-muted); }
+
+  #toast {
+    position: fixed; bottom: 20px; right: 20px; background: var(--bg-card);
+    border: 1px solid var(--green-dim); color: var(--green); font-family: var(--mono);
+    font-size: 11px; padding: 9px 16px; border-radius: 2px; opacity: 0;
+    transform: translateY(6px); transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none; z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-top">
+      <span class="site-title">// DAILY ROUTINE</span>
+      <span class="header-meta" id="header-date"></span>
+    </div>
+    <div class="header-sub">task tracker &middot; resets manually &middot; <span id="header-count">0/17 complete</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <span class="progress-stat" id="progress-stat">0%</span>
+  </div>
+
+  <div class="section-line">morning &amp; day</div>
+  <ul class="task-list">
+    <li class="task-item" data-key="Make Bed"><input type="checkbox"><span class="task-num">[01]</span><span class="task-label">Make Bed</span></li>
+    <li class="task-item" data-key="ACV Lemon Water"><input type="checkbox"><span class="task-num">[02]</span><span class="task-label">ACV Lemon Water</span></li>
+    <li class="task-item" data-key="Water with Electrolytes"><input type="checkbox"><span class="task-num">[03]</span><span class="task-label">Water with Electrolytes</span></li>
+    <li class="task-item" data-key="Keto Lunch"><input type="checkbox"><span class="task-num">[04]</span><span class="task-label">Keto Lunch</span></li>
+    <li class="task-item" data-key="Shower"><input type="checkbox"><span class="task-num">[05]</span><span class="task-label">Shower</span></li>
+    <li class="task-item" data-key="Spanish Lessons"><input type="checkbox"><span class="task-num">[06]</span><span class="task-label">Spanish Lessons</span></li>
+    <li class="task-item" data-key="Water with Creatine"><input type="checkbox"><span class="task-num">[07]</span><span class="task-label">Water with Creatine</span></li>
+    <li class="task-item" data-key="Write in Journal"><input type="checkbox"><span class="task-num">[08]</span><span class="task-label">Write in Journal</span></li>
+    <li class="task-item" data-key="1% Tasks"><input type="checkbox"><span class="task-num">[09]</span><span class="task-label">1% Tasks</span></li>
+    <li class="task-item" data-key="AI Learning"><input type="checkbox"><span class="task-num">[10]</span><span class="task-label">AI Learning</span></li>
+    <li class="task-item" data-key="Keto Dinner and Vitamins"><input type="checkbox"><span class="task-num">[11]</span><span class="task-label">Keto Dinner &amp; Vitamins</span></li>
+    <li class="task-item" data-key="5 PM Fast"><input type="checkbox"><span class="task-num">[12]</span><span class="task-label">5 PM Fast &middot; begin fasting window</span></li>
+    <li class="task-item" data-key="Evening Walk"><input type="checkbox"><span class="task-num">[13]</span><span class="task-label">Evening Walk</span></li>
+  </ul>
+
+  <div class="section-line" style="margin-top:28px">night routine</div>
+  <ul class="task-list">
+    <li class="task-item" data-key="Peppermint Tea"><input type="checkbox"><span class="task-num">[14]</span><span class="task-label">Peppermint Tea &middot; Collagen &amp; Sleep Stack</span></li>
+    <li class="task-item" data-key="Visualize"><input type="checkbox"><span class="task-num">[15]</span><span class="task-label">Visualize</span></li>
+    <li class="task-item" data-key="Bible and Prayer"><input type="checkbox"><span class="task-num">[16]</span><span class="task-label">Bible &amp; Prayer</span></li>
+    <li class="task-item" data-key="No Smartphones after 7pm"><input type="checkbox"><span class="task-num">[17]</span><span class="task-label">No Smartphones after 7pm &middot; Turn on Freedom App</span></li>
+  </ul>
+
+  <div class="section-line" style="margin-top:28px">daily notes</div>
+  <div class="notes-wrap">
+    <textarea id="notes" placeholder="// notes for today_"></textarea>
+  </div>
+  <div class="btn-row">
+    <button class="btn" id="btn-save">save &amp; close day</button>
+    <button class="btn btn-ghost" id="btn-clear">clear form</button>
+  </div>
+
+  <div class="log-wrap">
+    <div class="log-header-row">
+      <span class="log-title">// past log</span>
+      <button class="btn" id="btn-toggle">show archive</button>
+    </div>
+    <div class="log-entries" id="log-entries"></div>
+    <div class="log-detail" id="log-detail"></div>
+  </div>
+
+  <footer>
+    <a href="https://mattgil123.github.io/home/">&larr; mattgil123.github.io</a>
+    <span>daily-routine &middot; v2</span>
+  </footer>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function() {
+  const K_TASKS = 'dr2_tasks';
+  const K_NOTES = 'dr2_notes';
+  const K_LOG   = 'dr2_log';
+
+  const now = new Date();
+  const todayKey = now.toISOString().slice(0, 10);
+  const dateLabel = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+  document.getElementById('header-date').textContent = dateLabel;
+
+  const getJSON = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch(e) { return {}; } };
+  const setJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const getNotes = () => localStorage.getItem(K_NOTES) || '';
+  const setNotes = v => localStorage.setItem(K_NOTES, v);
+  const getLog = () => getJSON(K_LOG);
+  const setLog = v => setJSON(K_LOG, v);
+
+  const items = Array.from(document.querySelectorAll('.task-item'));
+  const total = items.length;
+
+  function updateProgress() {
+    const done = items.filter(i => i.classList.contains('done')).length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-stat').textContent = pct + '%';
+    document.getElementById('header-count').textContent = done + '/' + total + ' complete';
+  }
+
+  const state = getJSON(K_TASKS);
+  items.forEach(item => {
+    const key = item.dataset.key;
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (state[key]) { cb.checked = true; item.classList.add('done'); }
+    item.addEventListener('click', function(e) {
+      if (e.target !== cb) cb.checked = !cb.checked;
+      const checked = cb.checked;
+      item.classList.toggle('done', checked);
+      const s = getJSON(K_TASKS);
+      if (checked) s[key] = true; else delete s[key];
+      setJSON(K_TASKS, s);
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  const notesEl = document.getElementById('notes');
+  notesEl.value = getNotes();
+  notesEl.addEventListener('input', () => setNotes(notesEl.value));
+
+  document.getElementById('btn-save').addEventListener('click', () => {
+    const snapshot = {};
+    items.forEach(i => { snapshot[i.dataset.key] = i.querySelector('input').checked; });
+    const done = Object.values(snapshot).filter(Boolean).length;
+    const log = getLog();
+    log[todayKey] = { tasks: snapshot, notes: notesEl.value, score: done + '/' + total };
+    setLog(log);
+    toast('day saved · ' + done + '/' + total + ' complete');
+    if (document.getElementById('log-entries').classList.contains('open')) renderLog();
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    items.forEach(i => { i.querySelector('input').checked = false; i.classList.remove('done'); });
+    notesEl.value = '';
+    setJSON(K_TASKS, {});
+    setNotes('');
+    updateProgress();
+    toast('form cleared');
+  });
+
+  document.getElementById('btn-toggle').addEventListener('click', function() {
+    const el = document.getElementById('log-entries');
+    const open = el.classList.toggle('open');
+    this.textContent = open ? 'hide archive' : 'show archive';
+    if (open) renderLog();
+  });
+
+  function renderLog() {
+    const log = getLog();
+    const container = document.getElementById('log-entries');
+    const detail = document.getElementById('log-detail');
+    detail.classList.remove('active');
+    detail.innerHTML = '';
+    const keys = Object.keys(log).sort().reverse();
+    if (!keys.length) {
+      container.innerHTML = '<div class="empty-log">// no entries yet_</div>';
+      return;
+    }
+    container.innerHTML = '';
+    keys.forEach(k => {
+      const entry = log[k];
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = '<span class="log-row-date">' + k + '</span><span class="log-row-score">' + entry.score + '</span>';
+      row.addEventListener('click', () => showDetail(k, entry));
+      container.appendChild(row);
+    });
+  }
+
+  function showDetail(dateKey, entry) {
+    const detail = document.getElementById('log-detail');
+    detail.classList.add('active');
+    const tasksHtml = Object.entries(entry.tasks).map(([name, done]) =>
+      '<div class="log-task-row"><div class="dot ' + (done ? 'on' : 'off') + '"></div><span class="log-task-name">' + esc(name) + '</span></div>'
+    ).join('');
+    const notesHtml = entry.notes ? '<div class="log-notes-txt">// ' + esc(entry.notes) + '</div>' : '';
+    detail.innerHTML = '<div class="log-detail-header">' + dateKey + ' · ' + entry.score + ' complete</div><div class="log-task-grid">' + tasksHtml + '</div>' + notesHtml;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+})();
+</script>
+</body>
+</html>
